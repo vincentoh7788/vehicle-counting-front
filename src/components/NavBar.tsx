@@ -1,31 +1,53 @@
-import React from "react";
 
+import { Link,useNavigate } from "react-router-dom";
+import axios from 'axios';
+import useToken from './useToken';
+import { API_HOST } from "./config";
+import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 
-const NavBar = () => {
-  return(
-    <nav className ="navbar navbar-expand-lg navbar-light bg-light">
-    <div className ="container-fluid">
-      <a className ="navbar-brand" href="#">Vehicle Counting Application</a>
-      <button className ="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span className ="navbar-toggler-icon"></span>
-      </button>
-      <div className ="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul className ="navbar-nav me-auto mb-2 mb-lg-0">
-          <li className ="nav-item">
-            <a className="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link" href="#">Check History</a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link" href="#">Logout</a>
-          </li>
-        </ul>
+ const NavBar:React.FC = () => {
+  const navigate = useNavigate();
+  const { token, removeToken } = useToken();
+  const handleLogout = async () => {
+    
+    try{
+      const resp = await axios.post(`${API_HOST}/logout`, {
 
-      </div>
-    </div>
-  </nav>
-  );
-};
+      });
+      if (resp) {
+        removeToken();
+        navigate("/")
+      }
+    }
+    catch(error:any){
+      if (error.response) {
+      alert("Server error, please try later");
+      }
+    }
+
+  };
+   return (
+    <Navbar bg="light" expand="lg" style={{ border: '1px inset #AFF' }}>
+    <LinkContainer to="/home">
+      <Navbar.Brand>Vehicle Counting System</Navbar.Brand>
+    </LinkContainer>
+    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+    <Navbar.Collapse id="basic-navbar-nav">
+      <Nav className="mr-auto">
+        <LinkContainer to="/home">
+          <Nav.Link>Home</Nav.Link>
+        </LinkContainer>
+        <LinkContainer to="/history">
+          <Nav.Link>Check History</Nav.Link>
+        </LinkContainer>
+        <LinkContainer to="/logout">
+          <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+        </LinkContainer>
+      </Nav>
+    </Navbar.Collapse>
+  </Navbar>
+   );
+ }
 
 export default NavBar;
